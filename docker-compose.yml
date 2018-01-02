@@ -1,0 +1,25 @@
+version: '3'
+
+services:
+  postgres:
+    container_name: clair-db
+    image: postgres:latest
+    restart: unless-stopped
+    volumes:
+      - ./data/postgres/data:/var/lib/postgresql/data
+    environment:
+      # POSTGRES_PASSWORD must also be set in data/clair/config/config.yml
+      POSTGRES_PASSWORD: supercompliacatedpasswuuuud
+
+  clair:
+    container_name: clair
+    image: quay.io/coreos/clair:latest
+    restart: unless-stopped
+    depends_on:
+      - postgres
+    ports:
+      - "6060-6061:6060-6061"
+    volumes:
+      - /tmp:/tmp
+      - ./data/clair/config:/config
+    command: [-config, /config/config.yaml]
